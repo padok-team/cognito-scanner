@@ -8,10 +8,11 @@ from AWSSRP import AWSSRP
 cli = typer.Typer()
 
 client_id_option = typer.Option('--client_id',help='Client ID')
+region_option = typer.Option('--region',help='Region')
 
 @cli.command(help="Get Identity Pool Keys")
 def get_identity_pool_keys(
-    region: Annotated[str, typer.Option('--region',help='Region')] = 'eu-west-3',
+    region: Annotated[str, region_option] = 'eu-west-3',
     pool_id: Annotated[str, typer.Option('--pool_id',help='Pool ID')] = '',
     identity_pool_id: Annotated[str, typer.Option('--identity_pool_id',help='Identity pool ID')] = '',
     client_id: Annotated[str, client_id_option] = '',
@@ -63,6 +64,7 @@ def get_identity_pool_keys(
 
 @cli.command(help="Create new user account")
 def account_creation(
+    region: Annotated[str, region_option] = 'eu-west-3',
     user_attributes: Annotated[str, typer.Option('--user_attributes',help='User attributes (email of the user)')] = '',
     client_id: Annotated[str, client_id_option] = '',
     username: Annotated[str, typer.Option('--username',help='Username')] = '',
@@ -76,7 +78,8 @@ def account_creation(
         password=password, 
         pool_id=None, 
         client_id=client_id,
-        user_attributes=user_attributes
+        user_attributes=user_attributes,
+        pool_region=region
     )
 
     confirmed, sub = srp.signup_user()
@@ -90,6 +93,7 @@ def account_creation(
 @cli.command(help="Confirm sign up of user")
 def confirm_sign_up(
     client_id: Annotated[str, client_id_option] = '',
+    region: Annotated[str, region_option] = 'eu-west-3',
     username: Annotated[str, typer.Option('--username',help='Username')] = '',
     confirmation_code: Annotated[str, typer.Option('--code',help='Confirmation code')] = '',
 ):
@@ -101,6 +105,7 @@ def confirm_sign_up(
         password=None, 
         pool_id=None, 
         client_id=client_id,
+        pool_region=region
     )
 
     print(srp.confirm_signup(confirmation_code))
@@ -109,6 +114,7 @@ def confirm_sign_up(
 @cli.command(help="Check for existing accounts on cognito idp")
 def account_oracle(
     client_id: Annotated[str, client_id_option] = '',
+    region: Annotated[str, region_option] = 'eu-west-3',
 ):
     print('test')
     # srp = AWSSRP(
@@ -116,6 +122,7 @@ def account_oracle(
     #     password='R4nd0mP4$$w0rd',
     #     pool_id=None, 
     #     client_id=client_id,
+    #     pool_region=region
     # )
 
     # Pass file or only one username
