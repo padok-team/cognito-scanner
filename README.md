@@ -93,3 +93,5 @@ aws_session_token = LEGcBVDyXxpyYaVs3i0XPa2dB+dCcwbc0IAbkdVpMVf1TTBOVDrNW+P/6/PU
 Open an issue to contact us or to give us suggestions. We are open to collaboration !
 
 ## License
+
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
