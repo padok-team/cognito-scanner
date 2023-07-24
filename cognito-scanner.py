@@ -156,6 +156,9 @@ def account_oracle(
     lock = threading.Lock()
     pool = futures.ThreadPoolExecutor(max_workers=5)
 
+    with open('existing_users.txt', 'w') as f:
+        f.write('Users found in cognito user pool :\n')
+
     with open(file, 'r') as f:
         boto_client = boto3.client('cognito-idp', region_name=region)
         for username in f:
