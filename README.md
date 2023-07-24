@@ -40,12 +40,14 @@ $ python3 -m venv <env_name>
 # Activate it
 $ source <env_name>/bin/activate
 ```
-3. Install the necessary packages `pip install requirements.txt`
+3. Install the necessary packages `pip install -r requirements.txt`
 
 ## Usage
 
 You can get details of how to use the script :
 ```bash
+# Go to the scanner folder
+$ cd scanner/
 $ python3 cognito-scanner.py --help
 # Get information about how to use the unwanted account creation script
 $ python3 cognito-scanner.py account-creation --help

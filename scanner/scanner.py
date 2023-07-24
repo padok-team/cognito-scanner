@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+#encoding: utf-8
+
 import boto3
 import typer
 import threading
@@ -5,7 +8,7 @@ import threading
 from concurrent import futures
 from typing_extensions import Annotated
 
-from AWSSRP import AWSSRP
+from .AWSSRP import AWSSRP
 
 # CLI tool
 cli = typer.Typer()
