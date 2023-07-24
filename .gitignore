@@ -1,3 +1,6 @@
+existing_users.txt
+usernames.txt
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

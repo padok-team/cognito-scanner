@@ -1,6 +1,8 @@
 import boto3
 import typer
+import threading
 
+from concurrent import futures
 from typing_extensions import Annotated
 
 from AWSSRP import AWSSRP
@@ -110,30 +112,57 @@ def confirm_sign_up(
 
     print(srp.confirm_signup(confirmation_code))
 
+def check_account(    
+    username: str,
+    client_id: str,
+    region: str,
+    pool: futures.ThreadPoolExecutor,
+    lock: threading.Lock,
+    boto_client: boto3.client
+):
+    try:
+        srp = AWSSRP(
+            username=username, 
+            password='R4nd0mP4$$w0rd',
+            pool_id=None, 
+            client_id=client_id,
+            pool_region=region,
+            user_attributes='test@fakemail.com'
+        )
+
+        try:
+            srp.signup_user(boto_client)
+        except Exception as error:
+            if 'User already exists' in str(error):
+                lock.acquire()
+                with open('existing_users.txt', 'a') as file:
+                    file.write(username+'\n')
+                lock.release()
+ 
+    except Exception as error:
+        pool.shutdown(wait=False, cancel_futures=True)
+        print(error)
+
 
 @cli.command(help="Check for existing accounts on cognito idp")
 def account_oracle(
     client_id: Annotated[str, client_id_option] = '',
     region: Annotated[str, region_option] = 'eu-west-3',
+    file: Annotated[str, typer.Option('--file', metavar='<path>', help='file which contains usernames',)] = '',
 ):
-    print('test')
-    # srp = AWSSRP(
-    #     username=username, 
-    #     password='R4nd0mP4$$w0rd',
-    #     pool_id=None, 
-    #     client_id=client_id,
-    #     pool_region=region
-    # )
+    if not file or file == '':
+        raise ValueError('Type a path file using --file arg')
 
-    # Pass file or only one username
-    # Open file and all users
-    # Test on every user
-    # Make a list of the result which worked
+    lock = threading.Lock()
+    pool = futures.ThreadPoolExecutor(max_workers=5)
 
+    with open(file, 'r') as f:
+        boto_client = boto3.client('cognito-idp', region_name=region)
+        for username in f:
+            pool.submit(check_account, username.strip(), client_id, region, pool, lock, boto_client)
+        pool.shutdown(wait=True)
+    
+    print('Users found available in the file ./existing_users.txt')
 
 if __name__ == "__main__":
     cli()
-
-    
-
-
