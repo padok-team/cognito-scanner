@@ -7,11 +7,13 @@ from typing_extensions import Annotated
 
 from AWSSRP import AWSSRP
 
+# CLI tool
 cli = typer.Typer()
 
 client_id_option = typer.Option('--client_id',help='Client ID')
 region_option = typer.Option('--region',help='Region')
 
+# Priviledge escalation to get creds to connect to AWS
 @cli.command(help="Get Identity Pool Keys")
 def get_identity_pool_keys(
     region: Annotated[str, region_option] = 'eu-west-3',
@@ -53,6 +55,7 @@ def get_identity_pool_keys(
     )
     credentials = resp['Credentials']
 
+    # Print result
     access_key = credentials['AccessKeyId']
     secret_key = credentials['SecretKey']
     secret_token = credentials['SessionToken']
@@ -64,6 +67,7 @@ def get_identity_pool_keys(
     print('aws_session_token = %s' % secret_token)
 
 
+# Create a new account using cognito provider
 @cli.command(help="Create new user account")
 def account_creation(
     region: Annotated[str, region_option] = 'eu-west-3',
@@ -72,9 +76,11 @@ def account_creation(
     username: Annotated[str, typer.Option('--username',help='Username')] = '',
     password: Annotated[str, typer.Option('--password',help='Password')] = '',
 ):
+    # Check that mail is passed correctly
     if not user_attributes or user_attributes == '':
         raise ValueError('You need to pass the user attributes. Type --help for more information')
     
+    # Create SRP object
     srp = AWSSRP(
         username=username, 
         password=password, 
@@ -84,6 +90,7 @@ def account_creation(
         pool_region=region
     )
 
+    # Signup user
     confirmed, sub = srp.signup_user()
 
     print('{')
@@ -92,6 +99,7 @@ def account_creation(
     print('}')
     print("/!\ If you received a confirmation mail to sign up, you can confirm it using the confirm-sign-up")
 
+# Confirm the sign up user
 @cli.command(help="Confirm sign up of user")
 def confirm_sign_up(
     client_id: Annotated[str, client_id_option] = '',
@@ -99,9 +107,11 @@ def confirm_sign_up(
     username: Annotated[str, typer.Option('--username',help='Username')] = '',
     confirmation_code: Annotated[str, typer.Option('--code',help='Confirmation code')] = '',
 ):
+    # Check that confirmation code is passed correctly
     if not confirmation_code or confirmation_code == '':
         raise ValueError('Need confirmation code')
     
+    # Create SRP object
     srp = AWSSRP(
         username=username, 
         password=None, 
@@ -112,6 +122,7 @@ def confirm_sign_up(
 
     print(srp.confirm_signup(confirmation_code))
 
+# Check that the usernames passed exist in cognito user pool
 def check_account(    
     username: str,
     client_id: str,
@@ -133,6 +144,7 @@ def check_account(
         try:
             srp.signup_user(boto_client)
         except Exception as error:
+            # If users already exists, write the username in the report file
             if 'User already exists' in str(error):
                 lock.acquire()
                 with open('existing_users.txt', 'a') as file:
@@ -143,19 +155,21 @@ def check_account(
         pool.shutdown(wait=False, cancel_futures=True)
         print(error)
 
-
+# Check for existing user in Cognito user pool
 @cli.command(help="Check for existing accounts on cognito idp")
 def account_oracle(
     client_id: Annotated[str, client_id_option] = '',
     region: Annotated[str, region_option] = 'eu-west-3',
     file: Annotated[str, typer.Option('--file', metavar='<path>', help='file which contains usernames',)] = '',
 ):
+    # Check that a file containing the usernames is passed
     if not file or file == '':
         raise ValueError('Type a path file using --file arg')
 
+    # Initialize the threads
     lock = threading.Lock()
     pool = futures.ThreadPoolExecutor(max_workers=5)
-
+   
     with open('existing_users.txt', 'w') as f:
         f.write('Users found in cognito user pool :\n')
 

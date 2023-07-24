@@ -128,6 +128,7 @@ class AWSSRP(object):
                 self.get_secret_hash(self.username, self.client_id, self.client_secret)})
         return response
     
+    # confirm the signup user
     def confirm_signup(self, code, client=None):
         boto_client = self.client or client
         response = boto_client.sign_up(
@@ -141,6 +142,7 @@ class AWSSRP(object):
         else:
             return 'Error : \n\t'+response
 
+    # sign up a new user
     def signup_user(self, client=None):
         boto_client = self.client or client
         response = boto_client.sign_up(
@@ -155,7 +157,6 @@ class AWSSRP(object):
             ]
         )
         return response['UserConfirmed'], response['UserSub']
-
 
     def authenticate_user(self, client=None):
         boto_client = self.client or client
