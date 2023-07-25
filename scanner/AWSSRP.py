@@ -131,11 +131,21 @@ class AWSSRP(object):
     # confirm the signup user
     def confirm_signup(self, code, client=None):
         boto_client = self.client or client
-        response = boto_client.sign_up(
-            ClientId=self.client_id,
-            Username=self.username,
-            ConfirmationCode=code,
-        )
+
+        if self.client_secret is not None:
+            secret_hash = self.get_secret_hash(self.username, self.client_id, self.client_secret)
+            response = boto_client.sign_up(
+                ClientId=self.client_id,
+                Username=self.username,
+                ConfirmationCode=code,
+                SecretHash=secret_hash,
+            )
+        else:
+            response = boto_client.sign_up(
+                ClientId=self.client_id,
+                Username=self.username,
+                ConfirmationCode=code,
+            ) 
         
         if not response:
             return 'User confirmed !'
@@ -145,17 +155,34 @@ class AWSSRP(object):
     # sign up a new user
     def signup_user(self, client=None):
         boto_client = self.client or client
-        response = boto_client.sign_up(
-            Password=self.password,
-            Username=self.username,
-            ClientId=self.client_id,
-            UserAttributes=[
-                {
-                    'Name': 'email',
-                    'Value': self.user_attributes
-                },
-            ]
-        )
+        if self.client_secret is not None:
+            secret_hash = self.get_secret_hash(self.username, self.client_id, self.client_secret)
+            response = boto_client.sign_up(
+                Password=self.password,
+                Username=self.username,
+                ClientId=self.client_id,
+                SecretHash=secret_hash,
+                UserAttributes=[
+                    {
+                        'Name': 'email',
+                        'Value': self.user_attributes
+                    },
+                ]
+            )
+        else:
+            response = boto_client.sign_up(
+                Password=self.password,
+                Username=self.username,
+                ClientId=self.client_id,
+                UserAttributes=[
+                    {
+                        'Name': 'email',
+                        'Value': self.user_attributes
+                    },
+                ]
+            )
+        
+
         return response['UserConfirmed'], response['UserSub']
 
     def authenticate_user(self, client=None):

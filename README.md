@@ -1,14 +1,39 @@
-# cognito-scanner
+# Cognito Scanner
 A simple script which implements different Cognito attacks such as Account Oracle or Priviledge Escalation
+
+![Cover](./image/cover.png)
+
+If you are not confortable with Cognito and want to understand the attacks better, you can check this [article](https://www.padok.fr/en/blog/aws-cognito-pentest) !
 
 ## Purpose of this repository
 
-Cognito is a AWS tool which provides a secure and scalable user authentication and access control service for web and mobile applications.
+Cognito is a AWS service which provides a secure and scalable user authentication and access control for web and mobile applications.
 
 This repository contains a script which implements three different attacks on Cognito :
 1. Unwanted account creation
+    - *What is it?* It is a malicious attempt to create user accounts without proper authorization or authentication, often leading to an influx or unauthorized accounts within a system.
+    - *Parameters needed from AWS?* Only the `Client ID` protected by the Cognito instance.
 2. Account Oracle
+    - *What is it?* It is a type of attack where an attacker exploits an external information source (known as "oracle"), to get information about a service or to gain unauthorized access.
+    - *Parameters needed from AWS?* Only the `Client ID` protected by the Cognito instance.
 3. Identity pool escalation
+    - *What is it?* It refers to the process where authenticated users obtain temporary credentials with higher privileges through an identity pool, allowing them to access more AWS resources than originally intended.
+    - *Parameters needed from AWS?* The `Client ID`, the `Pool ID` and the `Identity Pool ID`.
+
+## Data retrieval
+
+To execute the attacks you will need to pass some arguments. Some of them are from AWS ressources.
+
+#### What are these parameters?
+- **Pool ID** (or User Pool ID): unique identifier assigned to a specific user pool, which is used by applications to interact with that user pool and perform authentication and user management operations.
+- **Client ID**: unique identifier assigned to each application or client that integrates with a user pool, serving to authenticate and authorize requests from trusted sources during the authentication flow.
+- **Identity Pool ID**: unique identifier for an identity pool, which allows authenticated users to obtain temporary AWS role and credentials for accessing authorized resources.
+
+#### How do we get them?
+
+You can get these parameters in multiple ways but you have to find them by yourself because it depends on the authentication implementation. They can be stored in the javascript files or in the request of the authentication page. Sometimes they are in the parameters of the request. They can also be obfuscated in the javascript code and be retrieved after deobfuscation. If you intercept the requests using Burp the parameters can also appear there.
+
+Now that we have all the ressources needed, we can start the installation process.
 
 ## Requirements
 

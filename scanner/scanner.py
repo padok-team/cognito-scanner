@@ -15,6 +15,7 @@ cli = typer.Typer()
 
 client_id_option = typer.Option('--client_id',help='Client ID')
 region_option = typer.Option('--region',help='Region')
+secret_hash_option = typer.Option('--secret',help='(Optionnal) Client secret for connection')
 
 # Priviledge escalation to get creds to connect to AWS
 @cli.command(help="Get Identity Pool Keys")
@@ -25,6 +26,7 @@ def get_identity_pool_keys(
     client_id: Annotated[str, client_id_option] = '',
     username: Annotated[str, typer.Option('--username',help='Username')] = '',
     password: Annotated[str, typer.Option('--password',help='Password')] = '',
+    secret_hash: Annotated[str, secret_hash_option] = None,
 ):
 
     # Create SRP object
@@ -34,6 +36,7 @@ def get_identity_pool_keys(
         pool_id=pool_id, 
         client_id=client_id, 
         pool_region=region,
+        client_secret=secret_hash
     )
 
     # Get authenticated IdToken
@@ -78,6 +81,7 @@ def account_creation(
     client_id: Annotated[str, client_id_option] = '',
     username: Annotated[str, typer.Option('--username',help='Username')] = '',
     password: Annotated[str, typer.Option('--password',help='Password')] = '',
+    secret_hash: Annotated[str, secret_hash_option] = None,
 ):
     # Check that mail is passed correctly
     if not user_attributes or user_attributes == '':
@@ -90,7 +94,8 @@ def account_creation(
         pool_id=None, 
         client_id=client_id,
         user_attributes=user_attributes,
-        pool_region=region
+        pool_region=region,
+        client_secret=secret_hash
     )
 
     # Signup user
@@ -100,7 +105,7 @@ def account_creation(
     print("\tUserConfirmed:", confirmed)
     print("\tUserSub:", sub)
     print('}')
-    print("/!\ If you received a confirmation mail to sign up, you can confirm it using the confirm-sign-up")
+    print("/!\ If you received a confirmation mail to sign up, you can confirm it using the confirm-sign-up subcommand")
 
 # Confirm the sign up user
 @cli.command(help="Confirm sign up of user")
@@ -109,6 +114,7 @@ def confirm_sign_up(
     region: Annotated[str, region_option] = 'eu-west-3',
     username: Annotated[str, typer.Option('--username',help='Username')] = '',
     confirmation_code: Annotated[str, typer.Option('--code',help='Confirmation code')] = '',
+    secret_hash: Annotated[str, secret_hash_option] = None,
 ):
     # Check that confirmation code is passed correctly
     if not confirmation_code or confirmation_code == '':
@@ -120,7 +126,8 @@ def confirm_sign_up(
         password=None, 
         pool_id=None, 
         client_id=client_id,
-        pool_region=region
+        pool_region=region,
+        client_secret=secret_hash
     )
 
     print(srp.confirm_signup(confirmation_code))
@@ -132,7 +139,8 @@ def check_account(
     region: str,
     pool: futures.ThreadPoolExecutor,
     lock: threading.Lock,
-    boto_client: boto3.client
+    boto_client: boto3.client,
+    secret_hash: str,
 ):
     try:
         srp = AWSSRP(
@@ -141,7 +149,8 @@ def check_account(
             pool_id=None, 
             client_id=client_id,
             pool_region=region,
-            user_attributes='test@fakemail.com'
+            user_attributes='test@fakemail.com',
+            client_secret=secret_hash
         )
 
         try:
@@ -164,6 +173,7 @@ def account_oracle(
     client_id: Annotated[str, client_id_option] = '',
     region: Annotated[str, region_option] = 'eu-west-3',
     file: Annotated[str, typer.Option('--file', metavar='<path>', help='file which contains usernames',)] = '',
+    secret_hash: Annotated[str, secret_hash_option] = None,
 ):
     # Check that a file containing the usernames is passed
     if not file or file == '':
@@ -179,7 +189,7 @@ def account_oracle(
     with open(file, 'r') as f:
         boto_client = boto3.client('cognito-idp', region_name=region)
         for username in f:
-            pool.submit(check_account, username.strip(), client_id, region, pool, lock, boto_client)
+            pool.submit(check_account, username.strip(), client_id, region, pool, lock, boto_client, secret_hash)
         pool.shutdown(wait=True)
     
     print('Users found available in the file ./existing_users.txt')
