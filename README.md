@@ -31,7 +31,11 @@ To execute the attacks you will need to pass some arguments. Some of them are fr
 
 #### How do we get them?
 
-You can get these parameters in multiple ways but you have to find them by yourself because it depends on the authentication implementation. They can be stored in the javascript files or in the request of the authentication page. Sometimes they are in the parameters of the request. They can also be obfuscated in the javascript code and be retrieved after deobfuscation. If you intercept the requests using Burp the parameters can also appear there.
+You can get these parameters in multiple ways but you have to find them by yourself because it depends on the authentication implementation. If you use an HTTP proxy such as burp, you should be able to easily find these parameters:
+- **HTTP parameters**: sometimes they are in the parameters of the request.
+- **Javascript files**: they can also be obfuscated in the javascript code and be retrieved after deobfuscation.
+- **HTTP headers**: these parameters can also appear in the headers of the requests.
+- **Other files**: they can be stored in appendix files such as JSON files or CSV files.
 
 Now that we have all the ressources needed, we can start the installation process.
 
@@ -49,6 +53,14 @@ $ git --version
 ```
 
 ## Installation
+
+### Using pip
+
+```bash
+$ pip install cognito-scanner
+```
+
+### Manually
 
 1. Clone repository
 ```bash
