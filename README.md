@@ -17,7 +17,7 @@ This repository contains a script which implements three different attacks on Co
     - *What is it?* It is a type of attack where an attacker exploits an external information source (known as "oracle"), to get information about a service or to gain unauthorized access.
     - *Parameters needed from AWS?* Only the `Client ID` protected by the Cognito instance.
 3. Identity pool escalation
-    - *What is it?* It refers to the process where authenticated users obtain temporary credentials with higher privileges through an identity pool, allowing them to access more AWS resources than originally intended.
+    - *What is it?* It refers to the process where authenticated users obtain temporary credentials with higher priviledges through an identity pool, allowing them to access more AWS resources than originally intended.
     - *Parameters needed from AWS?* The `Client ID`, the `Pool ID` and the `Identity Pool ID`.
 
 ## Data retrieval
@@ -77,7 +77,7 @@ $ python3 setup.py sdist bdist_wheel
 # Leave the directory
 $ cd
 # Install your package using pip
-$ pip install path/to/cogniot-scanner/dist/cognito-scanner-0.1.0.tar.gz
+$ pip install path/to/cognito-scanner/dist/cognito-scanner-x.x.x.tar.gz
 ```
 3. You can now try to run the tool using `cognito-scanner --help`
 
