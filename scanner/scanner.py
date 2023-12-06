@@ -66,11 +66,11 @@ def get_identity_pool_keys(
     secret_key = credentials['SecretKey']
     secret_token = credentials['SessionToken']
 
-    print('[hacker]')
-    print('output = json')
-    print('aws_access_key_id = %s' % access_key)
-    print('aws_secret_access_key = %s' % secret_key)
-    print('aws_session_token = %s' % secret_token)
+    print('Use these env variables to use the identity :')
+    print('---' )
+    print('export AWS_ACCESS_KEY_ID = %s' % access_key)
+    print('export AWS_SECRET_ACCESS_KEY = %s' % secret_key)
+    print('export AWS_SESSION_TOKEN = %s' % secret_token)
 
 
 # Create a new account using cognito provider
